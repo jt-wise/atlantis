@@ -433,7 +433,7 @@ policy set: policy2: passed.
 $$$
 * :heavy_check_mark: To **approve** this project, comment:
   $$$shell
-  
+
   $$$
 * :put_litter_in_its_place: To **delete** this plan and lock, click [here](lock-url)
 * :repeat: To re-run policies **plan** this project again by commenting:
@@ -506,8 +506,6 @@ FAIL - <redacted plan file> - main - WARNING: Null Resource creation is prohibit
 
 2 tests, 1 passed, 0 warnings, 1 failure, 0 exceptions
 $$$
-
-
 </details>
 
 #### Policy Approval Status:
@@ -516,7 +514,7 @@ policy set: policy1: requires: 1 approval(s), have: 0.
 $$$
 * :heavy_check_mark: To **approve** this project, comment:
   $$$shell
-  
+
   $$$
 * :put_litter_in_its_place: To **delete** this plan and lock, click [here](lock-url)
 * :repeat: To re-run policies **plan** this project again by commenting:
@@ -525,6 +523,82 @@ $$$
   $$$
 $$$
 policy set: policy1: 2 tests, 1 passed, 0 warnings, 1 failure, 0 exceptions
+$$$
+
+---
+* :fast_forward: To **apply** all unapplied plans from this Pull Request, comment:
+  $$$shell
+  atlantis apply
+  $$$
+* :put_litter_in_its_place: To **delete** all plans and locks from this Pull Request, comment:
+  $$$shell
+  atlantis unlock
+  $$$
+`,
+		},
+		{
+			"single successful policy check wrapped with all policies passed",
+			command.PolicyCheck,
+			"",
+			[]command.ProjectResult{
+				{
+					ProjectCommandOutput: command.ProjectCommandOutput{
+						PolicyCheckResults: &models.PolicyCheckResults{
+							PolicySetResults: []models.PolicySetResult{
+								{
+									PolicySetName: "policy1",
+									// strings.Repeat required to get wrapped result
+									PolicyOutput: strings.Repeat("line\n", 13) + "4 tests, 4 passed, 0 warnings, 0 failures, 0 exceptions",
+									Passed:       true,
+								},
+							},
+							LockURL:   "lock-url",
+							RePlanCmd: "atlantis plan -d path -w workspace",
+							ApplyCmd:  "atlantis apply -d path -w workspace",
+						},
+					},
+					Workspace:   "workspace",
+					RepoRelDir:  "path",
+					ProjectName: "projectname",
+				},
+			},
+			models.Github,
+			`
+Ran Policy Check for project: $projectname$ dir: $path$ workspace: $workspace$
+
+<details><summary>Show Output</summary>
+
+#### Policy Set: $policy1$
+$$$diff
+line
+line
+line
+line
+line
+line
+line
+line
+line
+line
+line
+line
+line
+4 tests, 4 passed, 0 warnings, 0 failures, 0 exceptions
+$$$
+
+
+</details>
+* :arrow_forward: To **apply** this plan, comment:
+  $$$shell
+  atlantis apply -d path -w workspace
+  $$$
+* :put_litter_in_its_place: To **delete** this plan and lock, click [here](lock-url)
+* :repeat: To re-run policies **plan** this project again by commenting:
+  $$$shell
+  atlantis plan -d path -w workspace
+  $$$
+$$$
+policy set: policy1: 4 tests, 4 passed, 0 warnings, 0 failures, 0 exceptions
 $$$
 
 ---
@@ -1093,7 +1167,7 @@ policy set: policy1: requires: 1 approval(s), have: 0.
 $$$
 * :heavy_check_mark: To **approve** this project, comment:
   $$$shell
-  
+
   $$$
 * :put_litter_in_its_place: To **delete** this plan and lock, click [here](lock-url)
 * :repeat: To re-run policies **plan** this project again by commenting:
@@ -1359,7 +1433,7 @@ policy set: policy2: passed.
 $$$
 * :heavy_check_mark: To **approve** this project, comment:
   $$$shell
-  
+
   $$$
 * :put_litter_in_its_place: To **delete** this plan and lock, click [here](lock-url)
 * :repeat: To re-run policies **plan** this project again by commenting:
@@ -1442,7 +1516,7 @@ policy set: policy1: requires: 1 approval(s), have: 0.
 $$$
 * :heavy_check_mark: To **approve** this project, comment:
   $$$shell
-  
+
   $$$
 * :put_litter_in_its_place: To **delete** this plan and lock, click [here](lock-url)
 * :repeat: To re-run policies **plan** this project again by commenting:
@@ -1597,7 +1671,7 @@ policy set: policy1: requires: 1 approval(s), have: 0.
 $$$
 * :heavy_check_mark: To **approve** this project, comment:
   $$$shell
-  
+
   $$$
 * :put_litter_in_its_place: To **delete** this plan and lock, click [here](lock-url)
 * :repeat: To re-run policies **plan** this project again by commenting:
