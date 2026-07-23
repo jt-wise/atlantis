@@ -3368,6 +3368,58 @@ Plan: 1 to add, 0 to change, 0 to destroy.
 	Equals(t, normalize(exp), normalize(rendered))
 }
 
+func TestRenderProjectResults_MultiProjectPolicyWrapped(t *testing.T) {
+	mr := events.NewMarkdownRenderer(
+		false,      // gitlabSupportsCommonMark
+		false,      // disableApplyAll
+		false,      // disableApply
+		false,      // disableMarkdownFolding
+		false,      // disableRepoLocking
+		false,      // enableDiffMarkdownFormat
+		"",         // markdownTemplateOverridesDir
+		"atlantis", // executableName
+		false,      // hideUnchangedPlanComments
+		false,      // quietPolicyChecks
+	)
+	ctx := &command.Context{
+		Log: logging.NewNoopLogger(t).WithHistory(),
+		Pull: models.PullRequest{
+			BaseRepo: models.Repo{VCSHost: models.VCSHost{Type: models.Github}},
+		},
+	}
+
+	policyOutput := strings.Repeat("line\n", 13)
+	var results []command.ProjectResult
+	for _, workspace := range []string{"development", "staging", "production"} {
+		results = append(results, command.ProjectResult{
+			RepoRelDir: ".",
+			Workspace:  workspace,
+			ProjectCommandOutput: command.ProjectCommandOutput{
+				PolicyCheckResults: &models.PolicyCheckResults{
+					PolicySetResults: []models.PolicySetResult{{
+						PolicySetName: "policy",
+						PolicyOutput:  policyOutput,
+						Passed:        true,
+					}},
+				},
+			},
+		})
+	}
+
+	rendered := mr.Render(ctx, command.Result{ProjectResults: results}, &events.CommentCommand{Name: command.PolicyCheck})
+	if strings.Count(rendered, "<details><summary>Show Output</summary>") != 3 || strings.Count(rendered, "</details>") != 3 {
+		t.Fatalf("expected three closed policy output blocks, got:\n%s", rendered)
+	}
+
+	for _, headers := range [][2]string{{"### 1.", "### 2."}, {"### 2.", "### 3."}} {
+		start := strings.Index(rendered, headers[0])
+		next := strings.Index(rendered, headers[1])
+		if start < 0 || next <= start || !strings.Contains(rendered[start:next], "</details>") {
+			t.Fatalf("expected policy output block to close before %s, got:\n%s", headers[1], rendered)
+		}
+	}
+}
+
 // Test rendering when there was an error in one of the plans and we deleted
 // all the plans as a result.
 func TestRenderProjectResults_PlansDeleted(t *testing.T) {
