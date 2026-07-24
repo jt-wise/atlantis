@@ -15,6 +15,9 @@
 ```
 {{ end -}}
 {{- end }}
+{{ if .PolicyCleared }}
+</details>
+{{- end }}
 {{- if .PolicyCleared }}
 * :arrow_forward: To **apply** this plan, comment:
   ```shell
@@ -45,8 +48,5 @@
 ```
 {{- end }}
 
-{{- end }}
-{{ if .PolicyCleared }}
-</details>
 {{- end }}
 {{ end -}}

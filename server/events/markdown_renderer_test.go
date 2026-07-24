@@ -3388,7 +3388,7 @@ func TestRenderProjectResults_MultiProjectPolicyWrapped(t *testing.T) {
 		},
 	}
 
-	policyOutput := strings.Repeat("line\n", 13)
+	policyOutput := strings.Repeat("line\n", 13) + "15 tests, 15 passed, 0 warnings, 0 failures, 0 exceptions"
 	var results []command.ProjectResult
 	for _, workspace := range []string{"development", "staging", "production"} {
 		results = append(results, command.ProjectResult{
@@ -3418,6 +3418,10 @@ func TestRenderProjectResults_MultiProjectPolicyWrapped(t *testing.T) {
 			t.Fatalf("expected policy output block to close before %s, got:\n%s", headers[1], rendered)
 		}
 	}
+
+	firstSummary := strings.Index(rendered, "policy set: policy: 15 tests, 15 passed, 0 warnings, 0 failures, 0 exceptions")
+	firstClose := strings.Index(rendered, "</details>")
+	Assert(t, firstSummary > firstClose, "expected policy summary outside the folded output block")
 }
 
 // Test rendering when there was an error in one of the plans and we deleted
